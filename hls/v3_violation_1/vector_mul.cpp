@@ -15,13 +15,13 @@ adder_tree:
     return final_sum;
 }
 
-// Folding
+// Solve violation
 u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
 {
     const u32 mask = 0x1fffffff;
     u32 sum[BUFFER];
     u32 final_sum;
-
+    u32 prev;
 
 calc:
 	for (auto i = 0; i < N; i+=BUFFER)
@@ -31,12 +31,12 @@ calc:
 #pragma HLS UNROLL
             if (i == 0)
             {
-                sum[j] = static_cast<u29>(0);
+                prev = static_cast<u29>(0);
             }
             else{
-                sum[j] = sum[j];
+                prev = sum[j];
             }
-            sum[j] += (c[i + j] + a[i + j] * b[i + j]) & mask;
+            sum[j] = prev + (c[i + j] + a[i + j] * b[i + j]) & mask;
         }
     }
 
@@ -46,3 +46,4 @@ calc:
 
     return final_sum;
 }
+
