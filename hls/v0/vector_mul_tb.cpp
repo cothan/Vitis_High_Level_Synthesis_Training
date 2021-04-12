@@ -6,7 +6,7 @@ using namespace std;
 
 u32 vector_mul(const u32 *a, const u32 *b, const u32 *c)
 {
-	u32 sum = 0;
+    u32 sum = 0;
     const u32 mask = 0x1fffffff;
     for (auto i = 0; i < N; i++)
     {
@@ -17,7 +17,6 @@ u32 vector_mul(const u32 *a, const u32 *b, const u32 *c)
 
     return sum;
 }
-
 
 int main()
 {
