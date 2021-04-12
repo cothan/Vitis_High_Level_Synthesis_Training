@@ -27,29 +27,15 @@ u32 test_top(const u32 *a, const u32 *b, const u32 *c)
     trans_pkt in_tmp;
     for (auto i = 0; i < 3 * N; i++)
     {
-//        if (i < N)
-//        {
-//            in_tmp.data = a[i];
-//        }
-//        else
-//        {
-//            if (i < 2*N) in_tmp.data = b[i - N];
-//            else in_tmp.data = c[i - 2*N];
-//        }
-    	switch (i % 3)
-		{
-		case 0:
-			in_tmp.data = a[i/3];
-			break;
-
-		case 1:
-			in_tmp.data = b[i/3];
-			break;
-
-		default:
-			in_tmp.data = c[i/3];
-			break;
-		}
+        if (i < N)
+        {
+            in_tmp.data = a[i];
+        }
+        else
+        {
+            if (i < 2*N) in_tmp.data = b[i - N];
+            else in_tmp.data = c[i - 2*N];
+        }
 
         if (i == 3*N - 1)
         {
