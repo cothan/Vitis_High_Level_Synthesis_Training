@@ -1,8 +1,11 @@
 #include "vector_mul.h"
 
+// Reduce BUFFER size to 10
 #define BUFFER 10
 
-
+/* Pipeline
+ * Pipeline to improve throughput
+ */
 u32 adder_tree(u32 sum[BUFFER])
 {
     u32 middle[5];
@@ -32,7 +35,11 @@ reduce:
     return final_sum;
 }
 
-// Solve Partition
+/* Pipeline
+ * Each iteration of variable i, we can perform a single loop of variable j
+ * Thus, we pipeline the outside loop to improve 
+ * We know II=1, so we add II=1 to force HLS tool, improve synthesis time
+ */
 u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
                         const u32 b[N/BUFFER][BUFFER],
                         const u32 c[N/BUFFER][BUFFER])
@@ -53,19 +60,27 @@ calc:
 #pragma HLS UNROLL
 #pragma BIND_OP variable=a op=mul impl=dsp
 #pragma BIND_OP variable=b op=mul impl=dsp
-#pragma BIND_OP variable=c op=mul impl=dsp
+#pragma BIND_OP variable=c op=add impl=dsp
             auto prev = (i == 0) ? static_cast<u32>(0) : sum[j];
             sum[j] = prev + (c[i/BUFFER][j] + a[i/BUFFER][j] * b[i/BUFFER][j]) & mask;
         }
     }
 
-    // TODO
     final_sum = adder_tree(sum);
     final_sum = final_sum*ALPHA;
 
     return final_sum;
 }
 
+/* Block level IO interface: AXIS (FIFO)
+ * After finished writing HLS part, it's time to write block IO
+ * Since we know size of N at compile time, so we know dept of FIFO_IN is 3*N
+ * Our assumption data flow is: full A -> full B -> full C
+ * 
+ * Add LOOP_FLATTEN to squeeze a few more cycles
+ * Add PIPELINE to enhance throughput
+ * We know II=1, so we add II=1 to force HLS tool, improve synthesis time
+ */
 void hls_vector_mul_top(hls::stream<trans_pkt> &fifo_in,
 						hls::stream<trans_pkt> &fifo_out)
 {
@@ -111,5 +126,8 @@ buffering:
 
 	fifo_out.write(tmp_out);
 }
+
+
+
 
 

@@ -1,8 +1,11 @@
 #include "vector_mul.h"
 
+// Reduce BUFFER size to 10
 #define BUFFER 10
 
-
+/* Pipeline
+ * Pipeline to improve throughput
+ */
 u29 adder_tree(u29 sum[BUFFER])
 {
     u29 final_sum = 0;
@@ -11,9 +14,9 @@ u29 adder_tree(u29 sum[BUFFER])
 adder_tree:
 	for (auto j = 0; j < BUFFER; j+=5)
     {
+#pragma HLS PIPELINE II=1
 		for (auto i = 0; i < 5; i++)
         {
-#pragma HLS LOOP_FLATTEN
 #pragma HLS UNROLL
             auto prev = (i == 0) ? static_cast<u29>(0) : middle[i];
             middle[i] = prev + sum[j + i];
@@ -27,11 +30,14 @@ reduce:
         final_sum += middle[i];
     }
 
+    final_sum &= mask;
     return final_sum;
 }
 
 
-// Solve Partition
+/* Bit precision
+ * Remove masking, after synthesis, we see huge resources usage drop
+ */
 u32 hls_vector_mul_part(const u29 a[N/BUFFER][BUFFER],
                         const u29 b[N/BUFFER][BUFFER],
                         const u29 c[N/BUFFER][BUFFER])
@@ -49,18 +55,28 @@ calc:
         {
 #pragma HLS UNROLL
 #pragma BIND_OP variable=a op=mul impl=dsp
+#pragma BIND_OP variable=b op=mul impl=dsp
+#pragma BIND_OP variable=c op=add impl=dsp
             auto prev = (i == 0) ? static_cast<u29>(0) : sum[j];
             sum[j] = prev + (c[i/BUFFER][j] + a[i/BUFFER][j] * b[i/BUFFER][j]);
         }
     }
 
-    // TODO
     final_sum = adder_tree(sum);
     final_sum = final_sum*ALPHA;
 
     return final_sum;
 }
 
+/* Block level IO interface: AXIS (FIFO)
+ * After finished writing HLS part, it's time to write block IO
+ * Since we know size of N at compile time, so we know dept of FIFO_IN is 3*N
+ * Our assumption data flow is: full A -> full B -> full C
+ * 
+ * Add LOOP_FLATTEN to squeeze a few more cycles
+ * Add PIPELINE to enhance throughput
+ * We know II=1, so we add II=1 to force HLS tool, improve synthesis time
+ */
 void hls_vector_mul_top(hls::stream<trans_pkt> &fifo_in,
 						hls::stream<trans_pkt> &fifo_out)
 {
@@ -70,7 +86,7 @@ void hls_vector_mul_top(hls::stream<trans_pkt> &fifo_in,
 #pragma HLS INTERFACE axis port=fifo_out depth=1
 
     u32 final_sum;
-    static u32  a_buffer[N/BUFFER][BUFFER],
+    static u29  a_buffer[N/BUFFER][BUFFER],
 		        b_buffer[N/BUFFER][BUFFER],
 		        c_buffer[N/BUFFER][BUFFER];
     trans_pkt tmp, tmp_out;
