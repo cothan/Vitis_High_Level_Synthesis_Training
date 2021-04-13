@@ -13,7 +13,7 @@
 #define vaddv(res, c) res = vaddvq_u32(c);
 #define vand(c, a, b) c = vandq_u32(a, b);
 
-#define N 400
+#define N 200
 #define ALPHA 2840173201 // 0b10101001010010011001101010010001
 
 void print_vectors(uint32x4x4_t v)
@@ -43,7 +43,7 @@ uint32_t neon_vector_mul(const uint32_t *a, const uint32_t *b, const uint32_t *c
     const uint32_t mask = 0x1fffffff;
     neon_mask = vdupq_n_u32(mask);
 
-    for (int i = 0; i < N; i += 16)
+    for (int i = 0; i < N - 8; i += 16)
     {
         vload(neon_a, &a[i]);
         vload(neon_b, &b[i]);
@@ -73,6 +73,12 @@ uint32_t neon_vector_mul(const uint32_t *a, const uint32_t *b, const uint32_t *c
     vadd(neon_e.val[0], neon_e.val[0], neon_e.val[3]);
 
     vaddv(sum, neon_e.val[0]);
+
+    // Deal with left over, in case N = odd number, for example. 
+    for (int i = N - 8; i < N; i++)
+    {
+        sum += (a[i] * b[i] + c[i]) & mask;
+    }
 
     sum &= mask;
     sum *= ALPHA;
