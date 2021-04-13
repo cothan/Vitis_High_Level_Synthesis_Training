@@ -31,7 +31,7 @@ The proposed algorithm in this lecture is not a practical algorithm, I mix popul
 
 All code in this repo are verified, passed `C simulation` and `Co-simulation`. 
 
-### Director tree 
+### Directory structure
 
 ```
 .
