@@ -21,7 +21,6 @@ u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
     const u32 mask = 0x1fffffff;
     u32 sum[BUFFER];
     u32 final_sum;
-    u32 prev;
 
 calc:
 	for (auto i = 0; i < N; i+=BUFFER)
@@ -29,13 +28,7 @@ calc:
         for (auto j = 0; j < BUFFER; j++)
         {
 #pragma HLS UNROLL
-            if (i == 0)
-            {
-                prev = static_cast<u29>(0);
-            }
-            else{
-                prev = sum[j];
-            }
+            auto prev = (i == 0) ? static_cast<u32>(0) : sum[j];
             sum[j] = prev + (c[i + j] + a[i + j] * b[i + j]) & mask;
         }
     }

@@ -31,7 +31,7 @@ calc:
 #pragma HLS UNROLL
             if (i == 0)
             {
-                sum[j] = static_cast<u29>(0);
+                sum[j] = static_cast<u32>(0);
             }
             else{
                 sum[j] = sum[j];

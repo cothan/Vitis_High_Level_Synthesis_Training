@@ -6,7 +6,6 @@ u32 adder_tree(u32 sum[BUFFER])
 {
     u32 final_sum;
     u32 middle[5];
-    u32 prev;
 
     const u32 mask = 0x1fffffff;
 
@@ -17,14 +16,7 @@ adder_tree:
         {
 #pragma HLS LOOP_FLATTEN
 #pragma HLS UNROLL
-            if (j == 0)
-            {
-                prev = 0;
-            }
-            else
-            {
-                prev = middle[i];
-            }
+            auto prev = (i == 0) ? static_cast<u32>(0) : middle[i];
             middle[i] = prev + sum[j + i];
         }
     }
@@ -57,7 +49,6 @@ u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
     const u32 mask = 0x1fffffff;
 
     u32 final_sum;
-    u32 prev;
     u32 sum[BUFFER];
 #pragma HLS ARRAY_RESHAPE variable=sum complete dim=1
 
@@ -65,19 +56,11 @@ u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
 calc:
 	for (auto i = 0; i < N; i+=BUFFER)
     {
-#pragma HLS PIPELINE II=1
         for (auto j = 0; j < BUFFER; j++)
         {
 #pragma HLS UNROLL
 #pragma BIND_OP variable=a op=mul impl=dsp
-
-            if (i == 0)
-            {
-                prev = static_cast<u29>(0);
-            }
-            else{
-                prev = sum[j];
-            }
+            auto prev = (i == 0) ? static_cast<u32>(0) : sum[j];
             sum[j] = prev + (c[i/BUFFER][j] + a[i/BUFFER][j] * b[i/BUFFER][j]) & mask;
         }
     }
