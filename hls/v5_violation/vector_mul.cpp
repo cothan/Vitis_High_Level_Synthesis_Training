@@ -33,7 +33,10 @@ reduce:
     return final_sum;
 }
 
-// Solve Partition
+/* Array partition
+ * Increase reading/writing port of memory a,b,c. 
+ * To increase throughput
+ */
 u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
                         const u32 b[N/BUFFER][BUFFER],
                         const u32 c[N/BUFFER][BUFFER])
