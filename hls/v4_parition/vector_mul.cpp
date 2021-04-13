@@ -15,7 +15,10 @@ adder_tree:
     return final_sum;
 }
 
-// Solve Partition
+/* Array partition
+ * Increase reading/writing port of memory a,b,c. 
+ * To increase throughput
+ */
 u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
                         const u32 b[N/BUFFER][BUFFER],
                         const u32 c[N/BUFFER][BUFFER])
@@ -38,13 +41,17 @@ calc:
         }
     }
 
-    // TODO
+    // TODO: We will write adder_tree later
     final_sum = adder_tree(sum);
     final_sum = final_sum*ALPHA;
 
     return final_sum;
 }
 
+/* Pattition array wrapper
+ * This function is a wrapper, which convert 1 dimentional array to 
+ * 2 dimensional array, and unroll the 2nd array to fit with BUFFER parameter
+ */
 u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
 {
     u32 final_sum;

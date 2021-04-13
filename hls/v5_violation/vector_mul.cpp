@@ -2,7 +2,9 @@
 
 #define BUFFER 20
 
-
+/* Solve violation
+ * Similarly, we solve violation by creating throwable variable
+ */
 u32 adder_tree(u32 sum[BUFFER])
 {
     u32 middle[5];
@@ -61,6 +63,10 @@ calc:
     return final_sum;
 }
 
+/* Pattition array wrapper
+ * This function is a wrapper, which convert 1 dimentional array to 
+ * 2 dimensional array, and unroll the 2nd array to fit with BUFFER parameter
+ */
 u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
 {
     u32 final_sum;

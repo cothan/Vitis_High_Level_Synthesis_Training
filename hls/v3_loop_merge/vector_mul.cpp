@@ -15,7 +15,9 @@ adder_tree:
     return final_sum;
 }
 
-// Folding
+/* Loop Merging
+ * The loop philosophy of HLS is simple: One.Big.Loop
+ */
 u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
 {
     const u32 mask = 0x1fffffff;
@@ -40,7 +42,7 @@ calc:
         }
     }
 
-    // TODO
+    // TODO: We will write adder_tree later
     final_sum = adder_tree(sum);
     final_sum = final_sum*ALPHA;
 
