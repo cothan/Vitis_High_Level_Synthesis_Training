@@ -19,7 +19,7 @@ adder_tree:
 		for (auto i = 0; i < 5; i++)
         {
 #pragma HLS UNROLL
-            auto prev = (i == 0) ? static_cast<u32>(0) : middle[i];
+            auto prev = (j == 0) ? static_cast<u32>(0) : middle[i];
             middle[i] = prev + sum[j + i];
         }
     }
