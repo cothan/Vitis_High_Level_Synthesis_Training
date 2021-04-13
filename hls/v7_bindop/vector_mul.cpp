@@ -88,7 +88,6 @@ buffering:
     {
         for (auto j = 0; j < BUFFER; j++)
         {
-#pragma HLS PIPELINE II=1
             a_buffer[i/BUFFER][j] = a[i+j];
             b_buffer[i/BUFFER][j] = b[i+j];
             c_buffer[i/BUFFER][j] = c[i+j];

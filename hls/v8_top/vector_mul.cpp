@@ -1,8 +1,11 @@
 #include "vector_mul.h"
 
+// Reduce BUFFER size to 10
 #define BUFFER 10
 
-
+/* Solve violation
+ * Similarly, we solve violation by creating throwable variable
+ */
 u32 adder_tree(u32 sum[BUFFER])
 {
     u32 middle[5];
@@ -31,7 +34,10 @@ reduce:
     return final_sum;
 }
 
-// Solve Partition
+/* Force using DSP for multiplication and add
+ * This use fast fabric units, it can eliminate ciritcal path
+ * Improve cirical path
+ */
 u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
                         const u32 b[N/BUFFER][BUFFER],
                         const u32 c[N/BUFFER][BUFFER])
@@ -51,19 +57,23 @@ calc:
 #pragma HLS UNROLL
 #pragma BIND_OP variable=a op=mul impl=dsp
 #pragma BIND_OP variable=b op=mul impl=dsp
-#pragma BIND_OP variable=c op=mul impl=dsp
+#pragma BIND_OP variable=c op=add impl=dsp
             auto prev = (i == 0) ? static_cast<u32>(0) : sum[j];
             sum[j] = prev + (c[i/BUFFER][j] + a[i/BUFFER][j] * b[i/BUFFER][j]) & mask;
         }
     }
 
-    // TODO
     final_sum = adder_tree(sum);
     final_sum = final_sum*ALPHA;
 
     return final_sum;
 }
 
+/* Block level IO interface: AXIS (FIFO)
+ * After finished writing HLS part, it's time to write block IO
+ * Since we know size of N at compile time, so we know dept of FIFO_IN is 3*N
+ * Our assumption data flow is: full A -> full B -> full C
+ */
 void hls_vector_mul_top(hls::stream<trans_pkt> &fifo_in,
 						hls::stream<trans_pkt> &fifo_out)
 {
@@ -86,8 +96,6 @@ buffering:
     {
         for (auto j = 0; j < BUFFER; j++)
         {
-#pragma HLS LOOP_FLATTEN
-#pragma HLS PIPELINE II=1
         	tmp = fifo_in.read();
         	if (i < N) {
         		a_buffer[i/BUFFER][j] = tmp.data;
