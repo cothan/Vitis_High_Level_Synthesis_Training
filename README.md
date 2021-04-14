@@ -2,9 +2,7 @@
 
 ### Summary
 
-This is my guest lecture from ECE 615 2021 at George Mason Univerisy. 
-
-This lecture consist of demo, live coding, and slides based on a self-made algorithm.
+High Level Synthesis Introduction, this lecture consist of demo, live coding, and slides based on a self-made algorithm.
 
 
 ### Problems and Correctness
