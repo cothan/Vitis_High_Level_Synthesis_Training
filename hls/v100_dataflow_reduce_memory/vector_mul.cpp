@@ -12,10 +12,10 @@ u29 adder_tree(u29 sum[BUFFER])
     u29 middle[5];
 
 adder_tree:
-	for (auto j = 0; j < BUFFER; j+=5)
+    for (auto j = 0; j < BUFFER; j+=5)
     {
 #pragma HLS PIPELINE II=1
-		for (auto i = 0; i < 5; i++)
+        for (auto i = 0; i < 5; i++)
         {
 #pragma HLS UNROLL
             auto prev = (j == 0) ? static_cast<u29>(0) : middle[i];
@@ -97,7 +97,7 @@ calc:
  * Refactor out data flow
  */
 void hls_vector_mul_top(hls::stream<trans_pkt> &fifo_in,
-						hls::stream<trans_pkt> &fifo_out)
+                        hls::stream<trans_pkt> &fifo_out)
 {
 #pragma HLS INTERFACE s_axilite port=return
 //#pragma HLS INTERFACE ap_ctrl_none port=return <-- Enable this make Cosim failed
@@ -106,8 +106,8 @@ void hls_vector_mul_top(hls::stream<trans_pkt> &fifo_in,
 
     u32 final_sum;
     static u29  a_buffer[BUFFER],
-		        b_buffer[BUFFER],
-		        c_buffer[BUFFER],
+                b_buffer[BUFFER],
+                c_buffer[BUFFER],
                 sum[BUFFER];
     trans_pkt tmp, tmp_out;
 #pragma HLS ARRAY_PARTITION variable=a_buffer complete dim=1
@@ -127,9 +127,9 @@ for (auto i = 0; i < 3*N; i+=3*BUFFER)
 
     // Vector Mul
     tmp_out.data = final_sum;
-	tmp_out.last = 1;
-	tmp_out.keep = 0xf;
-	tmp_out.strb = 0xf;
+    tmp_out.last = 1;
+    tmp_out.keep = 0xf;
+    tmp_out.strb = 0xf;
 
-	fifo_out.write(tmp_out);
+    fifo_out.write(tmp_out);
 }

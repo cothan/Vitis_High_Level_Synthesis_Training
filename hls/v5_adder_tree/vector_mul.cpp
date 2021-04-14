@@ -13,9 +13,9 @@ u32 adder_tree(u32 sum[BUFFER])
     for (auto i = 0; i < 5; i++) middle[i] = 0;
 
 adder_tree:
-	for (auto j = 0; j < BUFFER; j+=5)
+    for (auto j = 0; j < BUFFER; j+=5)
     {
-		for (auto i = 0; i < 5; i++)
+        for (auto i = 0; i < 5; i++)
         {
 #pragma HLS UNROLL
             middle[i] += sum[j + i];
@@ -49,7 +49,7 @@ u32 hls_vector_mul_part(const u32 a[N/BUFFER][BUFFER],
 
 
 calc:
-	for (auto i = 0; i < N; i+=BUFFER)
+    for (auto i = 0; i < N; i+=BUFFER)
     {
         for (auto j = 0; j < BUFFER; j++)
         {
@@ -73,8 +73,8 @@ u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
 {
     u32 final_sum;
     u32 a_buffer[N/BUFFER][BUFFER],
-		b_buffer[N/BUFFER][BUFFER],
-		c_buffer[N/BUFFER][BUFFER];
+        b_buffer[N/BUFFER][BUFFER],
+        c_buffer[N/BUFFER][BUFFER];
 #pragma HLS ARRAY_PARTITION variable=a_buffer complete dim=2
 #pragma HLS ARRAY_PARTITION variable=b_buffer complete dim=2
 #pragma HLS ARRAY_PARTITION variable=c_buffer complete dim=2

@@ -25,14 +25,14 @@ u32 hls_vector_mul(const u32 a[N], const u32 b[N], const u32 c[N])
     u32 final_sum;
 
 init_sum:
-	for (auto i = 0; i < BUFFER; i++)
+    for (auto i = 0; i < BUFFER; i++)
     {
 #pragma HLS UNROLL
         sum[i] = 0;
     }
 
 calc:
-	for (auto i = 0; i < N; i+=BUFFER)
+    for (auto i = 0; i < N; i+=BUFFER)
     {
         for (auto j = 0; j < BUFFER; j++)
         {
