@@ -53,9 +53,9 @@ calc:
         for (auto j = 0; j < BUFFER; j++)
         {
 #pragma HLS UNROLL
-#pragma BIND_OP variable=a op=mul impl=dsp
-#pragma BIND_OP variable=b op=mul impl=dsp
-#pragma BIND_OP variable=c op=add impl=dsp
+#pragma HLS BIND_OP variable=a op=mul impl=dsp
+#pragma HLS BIND_OP variable=b op=mul impl=dsp
+#pragma HLS BIND_OP variable=c op=add impl=dsp
             auto prev = (i == 0) ? static_cast<u29>(0) : sum[j];
             sum[j] = prev + (c[i/BUFFER][j] + a[i/BUFFER][j] * b[i/BUFFER][j]);
         }
